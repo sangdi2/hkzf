@@ -1,15 +1,16 @@
 import React from 'react';
-import {BrowserRouter as Router,Route,Routes} from 'react-router-dom';
+import {BrowserRouter as Router,Route,Redirect} from 'react-router-dom';
 
 import Home from './pages/Home';
+
 const App=()=>{
   return (
     <Router>
-      <div>
-        <Routes>
-        <Route path='/home' element={<Home/>}/>
+      <div className='App'>
+  
+           <Route exact path="/" render={()=><Redirect to="/home"/>}/>
+           <Route path="/home" component={Home}/>
 
-        </Routes>
       </div>
     </Router>
   )
