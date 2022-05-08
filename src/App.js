@@ -1,13 +1,18 @@
-import logo from './logo.svg';
-import './App.css';
-import {Button} from 'antd-mobile'
-import {BrowserRouter as Router,Route,Link} from 'react-router-dom'
-function App() {
+import React from 'react';
+import {BrowserRouter as Router,Route,Routes} from 'react-router-dom';
+
+import Home from './pages/Home';
+const App=()=>{
   return (
-    <div>
-      <Button>登录</Button>
-    </div>
-  );
+    <Router>
+      <div>
+        <Routes>
+        <Route path='/home' element={<Home/>}/>
+
+        </Routes>
+      </div>
+    </Router>
+  )
 }
 
 export default App;
