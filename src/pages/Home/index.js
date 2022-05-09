@@ -19,7 +19,14 @@ export default class Home extends React.Component{
       hidden: false,
       fullScreen: true,
     }
-  
+    componentDidUpdate(prevprops){
+      if(prevprops.location.pathname!==this.props.location.pathname)
+      {
+          this.setState({
+            selectedTab:this.props.location.pathname
+          })
+      }
+  }
  
 
   render() {
