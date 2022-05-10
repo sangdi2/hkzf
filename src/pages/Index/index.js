@@ -1,7 +1,7 @@
 import React from "react";
-import { Carousel } from 'antd-mobile';
+import { Carousel, Flex, Grid, WingBlank } from 'antd-mobile'
 import axios from "axios";
-import { Flex, WhiteSpace } from 'antd-mobile';
+import { WhiteSpace } from 'antd-mobile';
 import Na1 from '../../assets/images/nav-1.png';
 import Na2 from '../../assets/images/nav-2.png';
 import Na3 from '../../assets/images/nav-3.png';
@@ -18,8 +18,9 @@ const navs=[
    
     state = {
         data: ['1', '2', '3'],
-        imgHeight: 176,
-        
+        imgHeight: 100,
+        groups:[],
+        news:[]
       }
       componentDidMount() {
         // simulate img loading
@@ -32,8 +33,30 @@ const navs=[
                   ],
           });
         }, 100);
+        this.getGroups()
+        this.getNews()
       }
+      async getGroups() {
+        const res = await axios.get('http://localhost:8088/home/groups', {
+          params: {
+            area: 'AREA%7C88cff55c-aaa4-e2e0'
+          }
+        })
     
+        // console.log(res)
+        this.setState({
+          groups: res.data.body
+        })
+      }
+      async getNews() {
+        const res = await axios.get(
+          'http://localhost:8088/home/news?area=AREA%7C88cff55c-aaa4-e2e0'
+        )
+    
+        this.setState({
+          news: res.data.body
+        })
+      }
       navv(){
         return navs.map(item => (
           <Flex.Item key={item.id} onClick={()=>this.props.history.push(item.path)}>
@@ -42,9 +65,32 @@ const navs=[
           </Flex.Item>
         ))
       }
+      renderNews() {
+        return this.state.news.map(item => (
+          <div className="news-item" key={item.id}>
+            <div className="imgwrap">
+              <img
+                className="img"
+                src={`http://localhost:8088${item.imgSrc}`}
+                alt=""
+              />
+            </div>
+            <Flex className="content" direction="column" justify="between">
+              <h3 className="title">{item.title}</h3>
+              <Flex className="info" justify="between">
+                <span>{item.from}</span>
+                <span>{item.date}</span>
+              </Flex>
+            </Flex>
+          </div>
+        ))
+      }
+    
+     
       render() {
         return (
           <div className="index">
+            <div className="swiper">
             <Carousel
               autoplay={true}
               infinite
@@ -60,7 +106,7 @@ const navs=[
                   <img
                     src={val}
                     alt=""
-                    style={{ width: '100%', verticalAlign: 'top' }}
+                    style={{ width: '100%',height:'100%', verticalAlign: 'top' }}
                     onLoad={() => {
                       // fire window resize event to change height
                       window.dispatchEvent(new Event('resize'));
@@ -70,10 +116,65 @@ const navs=[
                 </a>
               ))}
             </Carousel>
+            <Flex className="search-box">
+            {/* 左侧白色区域 */}
+            <Flex className="search">
+              {/* 位置 */}
+              <div
+                className="location"
+                onClick={() => this.props.history.push('/citylist')}
+              >
+                <span className="name">上海</span>
+                <i className="iconfont icon-arrow" />
+              </div>
+
+              {/* 搜索表单 */}
+              <div
+                className="form"
+                onClick={() => this.props.history.push('/search')}
+              >
+                <i className="iconfont icon-seach" />
+                <span className="text">请输入小区或地址</span>
+              </div>
+            </Flex>
+            {/* 右侧地图图标 */}
+            <i
+              className="iconfont icon-map"
+              onClick={() => this.props.history.push('/map')}
+            />
+          </Flex>
+            </div>
             <Flex className="nav">
                
                {this.navv()}
             </Flex>
+            <div className="group">
+          <h3 className="group-title">
+            租房小组 <span className="more">更多</span>
+          </h3>
+
+          {/* 宫格组件 */}
+          <Grid
+            data={this.state.groups}
+            columnNum={2}
+            square={false}
+            hasLine={false}
+            renderItem={item => (
+              <Flex className="group-item" justify="around" key={item.id}>
+                <div className="desc">
+                  <p className="title">{item.title}</p>
+                  <span className="info">{item.desc}</span>
+                </div>
+                <img src={`http://localhost:8088${item.imgSrc}`} alt="" />
+              </Flex>
+            )}
+          />
+        </div>
+        <div className="news">
+          <h3 className="group-title">最新资讯</h3>
+          <WingBlank size="md">{this.renderNews()}</WingBlank>
+        </div>
+
           </div>
         );
       }
