@@ -1,8 +1,11 @@
-html,body{
+html,body,#root,.App,.map,
+#container{
   height: 100%;
   font-family: 'Microsoft YaHei';
   color: #333;
   background-color: #fff;
+margin:0px;padding:0px;  
+
 }
 *{
   box-sizing: border-box;

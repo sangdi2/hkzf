@@ -20,7 +20,8 @@ const navs=[
         data: ['1', '2', '3'],
         imgHeight: 100,
         groups:[],
-        news:[]
+        news:[],
+        localcityy:[]
       }
       componentDidMount() {
         // simulate img loading
@@ -35,6 +36,17 @@ const navs=[
         }, 100);
         this.getGroups()
         this.getNews()
+        var myCity = new window.BMapGL.LocalCity();
+         myCity.get(async res=>{
+          const result = await axios.get(
+            `http://localhost:8088/area/info?name=${res.name}`
+          )
+          this.setState({
+            localcityy:result.data.body.label
+          })
+        }
+
+        )
       }
       async getGroups() {
         const res = await axios.get('http://localhost:8088/home/groups', {
@@ -124,7 +136,7 @@ const navs=[
                 className="location"
                 onClick={() => this.props.history.push('/citylist')}
               >
-                <span className="name">上海</span>
+                <span className="name">{this.state.localcityy}</span>
                 <i className="iconfont icon-arrow" />
               </div>
 
