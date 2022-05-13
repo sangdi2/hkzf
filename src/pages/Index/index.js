@@ -7,7 +7,7 @@ import Na2 from '../../assets/images/nav-2.png';
 import Na3 from '../../assets/images/nav-3.png';
 import Na4 from '../../assets/images/nav-4.png';
 import './index.scss';
-
+import {getcurrentcity} from '../../utils'
 const navs=[
   {id:1,src:Na1,name:'整租',path:'/home/findhouse'},
   {id:2,src:Na2,name:'合租',path:'/home/findhouse'},
@@ -23,7 +23,7 @@ const navs=[
         news:[],
         localcityy:[]
       }
-      componentDidMount() {
+      async componentDidMount() {
         // simulate img loading
         setTimeout(() => {
           this.setState({
@@ -36,17 +36,10 @@ const navs=[
         }, 100);
         this.getGroups()
         this.getNews()
-        var myCity = new window.BMapGL.LocalCity();
-         myCity.get(async res=>{
-          const result = await axios.get(
-            `http://localhost:8088/area/info?name=${res.name}`
-          )
-          this.setState({
-            localcityy:result.data.body.label
-          })
-        }
-
-        )
+        const cucity=await getcurrentcity()
+        this.setState({
+          localcityy:cucity.label
+        })
       }
       async getGroups() {
         const res = await axios.get('http://localhost:8088/home/groups', {

@@ -2,6 +2,7 @@ import React from "react";
 import { NavBar, Icon } from 'antd-mobile';
 import './index.scss'
 import axios from "axios";
+import {getcurrentcity} from '../../utils'
 
 const chulilist=list=>{
    const citylist={}
@@ -30,6 +31,9 @@ export default class Citylist extends React.Component{
        const re=await axios.get('http://localhost:8088/area/hot')
        citylist['hot']=re.data.body
        cityindex.unshift('hot')
+       const city=await getcurrentcity()
+       citylist['#']=[city]
+       cityindex.unshift('#')
        console.log(citylist,cityindex)
 
     }
