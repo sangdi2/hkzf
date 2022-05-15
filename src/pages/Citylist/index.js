@@ -4,6 +4,7 @@ import './index.scss'
 import axios from "axios";
 import {getcurrentcity} from '../../utils'
 import {List,AutoSizer} from 'react-virtualized';
+import NavHeader from "../../components/NavHeader";
 
 
   const formatletter=(letter)=>{
@@ -119,12 +120,7 @@ export default class Citylist extends React.Component{
     }
     render(){
         return <div className="citylist">
-            <NavBar
-      mode="light"
-      icon={<Icon type="left" />}
-      onLeftClick={() => this.props.history.go(-1)}
-      
-    >城市选择</NavBar>
+            <NavHeader>城市选择</NavHeader>
      <AutoSizer>
          {({width,height})=>(
                 <List
