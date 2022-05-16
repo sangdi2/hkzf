@@ -1,8 +1,8 @@
 import React from "react";
 import { NavBar, Icon } from 'antd-mobile';
-import './index.scss'
+import styles from './index.module.css'
 import { withRouter } from "react-router-dom/cjs/react-router-dom.min";
-import  PropTypes  from "prop-types"
+
 
 
 
