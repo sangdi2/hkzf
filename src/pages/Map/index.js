@@ -2,6 +2,7 @@ import axios from "axios";
 import React from "react";
 import NavHeader from "../../components/NavHeader";
 import styles from './index.module.css';
+import { Link } from 'react-router-dom'
 
 const labelStyle = {
     cursor: 'pointer',
@@ -13,6 +14,12 @@ const labelStyle = {
     textAlign: 'center'
   }
 export default class Map extends React.Component{
+  state = {
+    // 小区下的房源列表
+    housesList: [],
+    // 表示是否展示房源列表
+    isShowList: false
+  }
     componentDidMount(){
         const {label,value}=JSON.parse(localStorage.getItem('hkzf_localcity')) 
         var map = new window.BMapGL.Map("container");
@@ -101,6 +108,58 @@ export default class Map extends React.Component{
             this.createRect(longitude, latitude, areaName, count, value)
           }
     }
+    createRect(longitude, latitude,name, count, id){
+      const label = new window.BMapGL.Label('', {
+        position: new window.BMapGL.Point(longitude,latitude),
+        offset: new window.BMapGL.Size(-50, -28)
+      })
+  
+      // 给 label 对象添加一个唯一标识
+      label.id = id
+  
+      // 设置房源覆盖物内容
+      label.setContent(`
+        <div class="${styles.rect}">
+          <span class="${styles.housename}">${name}</span>
+          <span class="${styles.housenum}">${count}套</span>
+          <i class="${styles.arrow}"></i>
+        </div>
+      `)
+  
+      // 设置样式
+      label.setStyle(labelStyle)
+  
+      // 添加单击事件
+      label.addEventListener('click', () => {
+        /* 
+          1 创建 Label 、设置样式、设置 HTML 内容，绑定单击事件。
+          
+          2 在单击事件中，获取该小区的房源数据。
+          3 展示房源列表。
+          4 渲染获取到的房源数据。
+  
+          5 调用地图 panBy() 方法，移动地图到中间位置。
+          6 监听地图 movestart 事件，在地图移动时隐藏房源列表。
+        */
+  
+        this.getHousesList(id)
+  
+        // console.log('小区被点击了')
+      })
+  
+      // 添加覆盖物到地图中
+      this.map.addOverlay(label)
+    }
+    async getHousesList(id){
+      const res = await axios.get(`http://localhost:8088/houses?cityId=${id}`)
+    // console.log('小区的房源数据:', res)
+    this.setState({
+      housesList: res.data.body.list,
+
+      // 展示房源列表
+      isShowList: true
+    })
+    }
     createCircle(longitude, latitude, name, count, id, zoom){
         const label = new window.BMapGL.Label('', {
             position: new window.BMapGL.Point(longitude,latitude),
@@ -165,11 +224,56 @@ export default class Map extends React.Component{
         }
     }
     render(){
-        return <div className="map">
+        return <div className={styles.map}>
             <NavHeader >
                 地图找房
             </NavHeader>
-            <div id="container"></div>
+            <div id="container"className={styles.container} ></div>
+            <div
+          className={[
+            styles.houseList,
+            this.state.isShowList ? styles.show : ''
+          ].join(' ')}
+        >
+          <div className={styles.titleWrap}>
+            <h1 className={styles.listTitle}>房屋列表</h1>
+            <Link className={styles.titleMore} to="/home/list">
+              更多房源
+            </Link>
+          </div>
+
+          <div className={styles.houseItems}>
+            {/* 房屋结构 */}
+            {this.state.housesList.map(item => (
+              <div className={styles.house} key={item.houseCode}>
+                <div className={styles.imgWrap}>
+                  <img
+                    className={styles.img}
+                    src={`http://localhost:8080${item.houseImg}`}
+                    alt=""
+                  />
+                </div>
+                <div className={styles.content}>
+                  <h3 className={styles.title}>{item.title}</h3>
+                  <div className={styles.desc}>{item.desc}</div>
+                  <div>
+                    {item.tags.map(tag => (
+                      <span
+                        className={[styles.tag, styles.tag1].join(' ')}
+                        key={tag}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <div className={styles.price}>
+                    <span className={styles.priceNum}>{item.price}</span> 元/月
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
         </div>
     }
 }
