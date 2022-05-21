@@ -3,6 +3,7 @@ import React from "react";
 import NavHeader from "../../components/NavHeader";
 import styles from './index.module.css';
 import { Link } from 'react-router-dom'
+import { Toast } from "antd-mobile";
 
 const labelStyle = {
     cursor: 'pointer',
@@ -76,7 +77,9 @@ export default class Map extends React.Component{
         
     }
     async renderOverlays(id){
+        Toast.loading('加载中。。。',0,null,false)
         const res=await axios.get(`http://localhost:8088/area/map?id=${id}`)
+        Toast.hide()
         const data=res.data.body
         console.log(data)
         const { nextZoom, type } = this.getTypeAndZoom()
@@ -151,7 +154,9 @@ export default class Map extends React.Component{
       this.map.addOverlay(label)
     }
     async getHousesList(id){
+      Toast.loading('加载中。。。',0,null,false)
       const res = await axios.get(`http://localhost:8088/houses?cityId=${id}`)
+      Toast.hide()
     // console.log('小区的房源数据:', res)
     this.setState({
       housesList: res.data.body.list,
